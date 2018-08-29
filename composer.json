@@ -20,14 +20,5 @@
     "psr-4": {
       "SqlZero\\": "src/"
     }
-  },
-  "repositories": [
-    {
-      "type": "path",
-      "url": "/Users/machavia/Code/sqlzero-php",
-      "options": {
-        "symlink": true
-      }
-    }
-  ]
+  }
 }
