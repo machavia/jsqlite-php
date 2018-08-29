@@ -1,5 +1,6 @@
 {
   "name": "machavia/sqlzero",
+  "version": "dev-master",
   "description": "SQLite style database in a Json readable file, with typed fields, auto-increments, uniques, etc.",
   "type": "library",
   "license": "Apache-2.0",
@@ -18,7 +19,7 @@
   },
   "autoload": {
     "psr-4": {
-      "SqlZero\\": "src/"
+      "SqlZero\\": "src"
     }
   }
 }
