@@ -1,35 +1,24 @@
 {
-    "name": "machavia/sqlzero",
-    "description": "SQLite style database in a Json readable file, with typed fields, auto-increments, uniques, etc.",
-    "type": "library",
-    "license": "Apache-2.0",
-    "authors": [
-        {
-            "name": "Machavia Pichet",
-            "email": "machavia@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-      "php": ">=7.2.0"
-    },
+  "name": "machavia/sqlzero",
+  "description": "SQLite style database in a Json readable file, with typed fields, auto-increments, uniques, etc.",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Machavia Pichet",
+      "email": "machavia@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.2.0"
+  },
   "require-dev": {
     "phpunit/phpunit": "6.*"
   },
-
   "autoload": {
     "psr-4": {
       "SqlZero\\": "src/"
-    },
-
-    "repositories": {
-      "dev-package": {
-        "type": "path",
-        "url": "/Users/machavia/Code/sqlzero-php",
-        "options": {
-          "symlink": true
-        }
-      }
     }
   }
 }
