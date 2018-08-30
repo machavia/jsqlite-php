@@ -80,4 +80,37 @@ class Storage {
 		fclose( $fp );
 
 	}
+
+	public function insert( string $table, array $data ) : void {
+
+		if( !isset( $this->structure[$table])) {
+			throw new SqlZeroException('Unknown table ' .  $table );
+		}
+
+		$this->data[$table][] =  $data;
+
+		$this->write();
+	}
+
+	public function increaseAutoIncrement( string $tableName ) : int {
+		$table = $this->structure[$tableName];
+		$fieldKey = array_search('primary', array_column($table['fields'], 'index'));
+
+		if( $fieldKey === false ) {
+			throw new SqlZeroException('Table ' . $tableName . ' has no primary field for auto-increment');
+		}
+
+		$this->structure[$tableName]['fields'][$fieldKey]['ai']++;
+
+		return $this->structure[$tableName]['fields'][$fieldKey]['ai'];
+	}
+
+	public function checkValueExistence( string $table, string $field, $value ) : bool {
+		$data = $this->data[$table];
+		$result = array_search($value, array_column($data, $field));
+
+		if( $result !== false ) return true;
+
+		return false;
+	}
 }

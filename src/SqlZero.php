@@ -17,10 +17,15 @@ class SqlZero {
 	/**
 	 * SqlZero constructor.
 	 * @param array $config
-	 * @throws SqlZeroException
 	 */
 	public function __construct( array $config ) {
 		$this->storage = new Storage( $config );
+	}
+
+	public function exist() : bool {
+		if( empty( $this->storage->structure ) ) return true;
+
+		return true;
 	}
 
 
