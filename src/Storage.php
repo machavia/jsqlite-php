@@ -9,6 +9,8 @@
 namespace SqlZero;
 
 
+use SqlZero\Query\Query;
+
 class Storage {
 
 	private $dbPath = false;
@@ -112,5 +114,20 @@ class Storage {
 		if( $result !== false ) return true;
 
 		return false;
+	}
+
+	public function update( string $table, array $data, Query $query ) : int {
+		$i = 0;
+		$dataToUpdate = $query->exec( $this->data[$table]  );
+		foreach( $dataToUpdate as $rowId ) {
+			$i++;
+			foreach( $data as $key => $value ) {
+				$this->data[$table][$rowId][$key] = $value;
+			}
+		}
+
+		$this->write();
+
+		return $i;
 	}
 }

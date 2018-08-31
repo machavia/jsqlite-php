@@ -9,6 +9,8 @@
 namespace SqlZero;
 
 
+use SqlZero\Query\Where;
+
 class Table {
 
 	/** @var string $name */
@@ -21,11 +23,15 @@ class Table {
 	private $primary = false;
 
 
+	private $query;
+
+
 	public function __construct( string $name, Storage $storage ) {
 		if( empty( $name ) ) throw new SqlZeroException( 'Table name empty');
 		$this->name = $name;
 		$this->storage = $storage;
 		$this->load();
+		$this->query = new Query\Query();
 	}
 
 	public function addField( string $name, string $type, $lengthOrValue, string $indexType = '' ) {
@@ -118,6 +124,24 @@ class Table {
 		$this->storage->insert( $this->name, $cleanData );
 
 		return $ai;
+	}
+
+	public function update( array $data ) : int {
+		$updatedRows = $this->storage->update( $this->name, $data, $this->query );
+
+		return $updatedRows;
+	}
+
+	public function where( string $field, string $operatorOrValue, $value = false ) {
+		$ob = new Where( $field, $operatorOrValue, $value  );
+		$this->query->add( $ob, 'and' );
+		return $this;
+	}
+
+	public function orWhere( string $field, string $operatorOrValue, $value = false ) {
+		$ob = new Where( $field, $operatorOrValue, $value  );
+		$this->query->add( $ob, 'or' );
+		return $this;
 	}
 
 
