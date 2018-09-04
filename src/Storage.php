@@ -119,7 +119,7 @@ class Storage {
 	public function update( string $table, array $data, Query $query ) : int {
 		$i = 0;
 		$dataToUpdate = $query->exec( $this->data[$table]  );
-		foreach( $dataToUpdate as $rowId ) {
+		foreach( $dataToUpdate as $rowId => $useless ) {
 			$i++;
 			foreach( $data as $key => $value ) {
 				$this->data[$table][$rowId][$key] = $value;
@@ -129,5 +129,10 @@ class Storage {
 		$this->write();
 
 		return $i;
+	}
+
+	public function get( string $table, Query $query ) : array {
+		$data = $query->exec( $this->data[$table] );
+		return array_values($data);
 	}
 }

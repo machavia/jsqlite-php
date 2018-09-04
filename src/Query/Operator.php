@@ -20,9 +20,6 @@ class Operator {
 	}
 
 	public static function evaluate( $value1, $operator, $value2 ) : bool {
-		print_r( $value1 );
-		print_r( $operator );
-		print_r( $value2 );
 
 		switch( $operator ) {
 			case '=' :

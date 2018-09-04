@@ -9,11 +9,13 @@
 namespace SqlZero\Query;
 
 
+use SqlZero\SqlZeroException;
+
 class Query {
 
-	private $where;
-	private $select;
-	private $groupBy;
+	private $where = [];
+	private $select = [];
+	private $groupBy = [];
 
 	public function __construct() {
 
@@ -29,32 +31,56 @@ class Query {
 				$this->where[] = [ 'type' => 'and', 'where' => $ob ];
 			}
 		}
+		else if ( $ob instanceof Select ) {
+			$this->select[] = $ob;
+		}
 		else {
 			throw new SqlZeroException( 'Unknown query type' );
 		}
 	}
 
-	private function buid() {
-		$evaluator = function( $row ) {
-
-		};
-	}
-
 	public function exec( array $data ) : array {
 
-		$rowIds = [];
+		$rows = [];
+
 
 		foreach( $data as $rowId => $row ) {
 			$rowResult = true;
+			$lastType = '';
 
 			foreach( $this->where as $where ) {
+
 				$result = Operator::evaluate( $row[$where['where']->field], $where['where']->operator, $where['where']->value );
-				if( !$result ) $rowResult = false;
+
+
+				//in the case of an AND statement if the current result or the past result are not valid the row isn't valid
+				if( $where['type'] == 'and' ) {
+					if( $lastType == 'and' ) {
+						$rowResult = ( $result && $rowResult );
+					}
+					else $rowResult = $result;
+				}
+
+				//in case of an OR statement we need to check if the past record AND the current one are invalid to ignore the row
+				if( $where['type'] == 'or' ) {
+					$rowResult = ( $rowResult || $result );
+				}
+
+				$lastType = $where['type'];
 			}
 
-			if( $rowResult === true ) $rowIds[] = $rowId;
+			//if the row is valid we add its index to the return array
+			if( $rowResult === true ) {
+				$a = [];
+				foreach( $this->select as $select ) {
+					list($keyName, $value) = $select->exec( $row );
+					$a[$keyName] = $value;
+				}
+
+				$rows[$rowId] = empty($this->select) ? $row : $a;
+			}
 		}
 
-		return $rowIds;
+		return $rows;
 	}
 }

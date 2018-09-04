@@ -15,9 +15,9 @@ class Structure {
 		'integer' => [ 'int', 'int'],
 		'decimal'  => [ 'int', 'int'],
 		'char' => 'int',
-		'text' => null,
+		'text' => '',
 		'enum' => [],
-		'timestamp' => null,
+		'timestamp' => '',
 		'date' => 'string',
 	];
 

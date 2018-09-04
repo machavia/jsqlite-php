@@ -9,6 +9,7 @@
 namespace SqlZero;
 
 
+use SqlZero\Query\Select;
 use SqlZero\Query\Where;
 
 class Table {
@@ -34,7 +35,7 @@ class Table {
 		$this->query = new Query\Query();
 	}
 
-	public function addField( string $name, string $type, $lengthOrValue, string $indexType = '' ) {
+	public function addField( string $name, string $type, $lengthOrValue = '', string $indexType = '' ) {
 		Structure::validateField( $type, $lengthOrValue, $indexType );
 		if( $indexType == 'primary' && $this->primary != false) {
 			throw new SqlZeroException( 'Table ' . $this->name . ' already has a primary field' );
@@ -128,20 +129,103 @@ class Table {
 
 	public function update( array $data ) : int {
 		$updatedRows = $this->storage->update( $this->name, $data, $this->query );
+		$this->query = new Query\Query();
 
 		return $updatedRows;
 	}
 
-	public function where( string $field, string $operatorOrValue, $value = false ) {
+	public function where( string $field, string $operatorOrValue, $value = false ) : Table {
 		$ob = new Where( $field, $operatorOrValue, $value  );
 		$this->query->add( $ob, 'and' );
 		return $this;
 	}
 
-	public function orWhere( string $field, string $operatorOrValue, $value = false ) {
+	public function orWhere( string $field, string $operatorOrValue, $value = false ) : Table {
 		$ob = new Where( $field, $operatorOrValue, $value  );
 		$this->query->add( $ob, 'or' );
 		return $this;
+	}
+
+	public function select( $fields ) : Table {
+		if( !is_array( $fields ) ) $fields = [ $fields ];
+
+		foreach( $fields as $field ) {
+			$ob = new Select($field);
+			$this->query->add($ob);
+		}
+
+		return $this;
+	}
+
+	public function fetchAll() : array {
+		$result = $this->storage->get( $this->name, $this->query );
+		$this->query = new Query\Query();
+		return $result;
+	}
+
+	public function fetchRow() : array {
+		$result = $this->storage->get( $this->name, $this->query );
+		$this->query = new Query\Query();
+		return isset( $result[0] ) ?  $result[0] : [];
+	}
+
+	public function fetchPairs() : array {
+		$result = $this->storage->get( $this->name, $this->query );
+		$this->query = new Query\Query();
+		if( empty( $result ) ) return [];
+
+		if( count( $result[0] ) != 2 ) throw new SqlZeroException('You must select only 2 fields to use FetchPairs');
+		$pairs = [];
+
+		foreach( $result as $row ) {
+			list( $key, $value ) = array_values($row);
+			$pairs[$key] = $value;
+		}
+
+		return $pairs;
+	}
+
+	public function fetchCol() : array {
+		$result = $this->storage->get( $this->name, $this->query );
+		$this->query = new Query\Query();
+		if( empty( $result ) ) return [];
+
+		if( count( $result[0] ) != 1 ) throw new SqlZeroException('You must select only 1 fields to use FetchCol');
+		$pairs = [];
+
+		foreach( $result as $row ) {
+			list( $value ) = array_values($row);
+			$pairs[] = $value;
+		}
+
+		return $pairs;
+	}
+
+	public function fetchOne() : string {
+		$result = $this->storage->get( $this->name, $this->query );
+		$this->query = new Query\Query();
+		if( empty( $result ) ) return [];
+
+		if( count( $result[0] ) != 1 ) throw new SqlZeroException('You must select only 1 fields to use FetchOne');
+		$v = array_values($result[0]);
+
+		return $v[0];
+	}
+
+	public function get( $primary ) : array {
+
+		if( !$this->primary ) throw new SqlZeroException('No primary field declared for this table');
+
+		$ob = new Where( $this->primary, '=', $primary );
+		$this->query->add( $ob, 'and' );
+		$result = $this->storage->get( $this->name, $this->query );
+		$this->query = new Query\Query();
+
+		if( count( $result ) != 1 ) {
+			throw new SqlZeroException('Data corruption: multiple result for the primary field: ' . $this->primary .  " ($primary)");
+		}
+
+		return $result[0];
 	}
 
 

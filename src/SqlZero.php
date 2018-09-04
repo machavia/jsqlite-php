@@ -5,7 +5,7 @@
  * Date: 29/08/2018
  * Time: 15:20
  */
-
+declare(strict_types=1);
 namespace SqlZero;
 
 class SqlZero {
@@ -41,7 +41,7 @@ class SqlZero {
 
 	}
 
-	public function get( string $table, $primary ) {
+	public function find( string $table, $primary ) {
 
 	}
 
