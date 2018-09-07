@@ -9,7 +9,7 @@
 namespace SqlZero;
 
 
-class Structure {
+final class Structure {
 
 	static private $validFieldsTypes = [
 		'integer' => [ 'int', 'int'],
@@ -32,7 +32,7 @@ class Structure {
 		if( is_array( self::$validFieldsTypes[$type] ) ) {
 			if( empty( self::$validFieldsTypes[$type] ) ) return;
 
-			if( count( $value ) != 2
+			if( !is_array( $value ) || count( $value ) != 2
 				|| !is_numeric( $value[0] )
 				|| !is_numeric( $value[1] )
 			) {

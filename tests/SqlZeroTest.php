@@ -14,7 +14,6 @@ use SqlZero\SqlZero;
 final class SqlZeroTest extends TestCase {
 
 	private $s;
-	private $t;
 	private $path;
 
 	public function setUp()
@@ -29,7 +28,7 @@ final class SqlZeroTest extends TestCase {
 	}
 
 	public function tearDown() {
-		unlink( __DIR__ . '/../testDb.json' );
+		unlink( $this->path );
 	}
 
 	public function testInit() {
@@ -111,6 +110,25 @@ final class SqlZeroTest extends TestCase {
 
 		$this->assertSame($table, $db['structure']['my_table']);
 
+	}
+
+	/**
+	 * @expectedException \SqlZero\SqlZeroException
+	 * @dataProvider unauthorizedFields
+	 */
+	public function testTextFieldAsUnique( $type, $value, $index ) {
+
+		$t = $this->s->table( 'my_table' );
+		$t->addField( 'foo', $type, $value, $index );
+	}
+
+	public function unauthorizedFields() {
+		return [
+			['text', '', 'unique'],
+			['integer', '', ''],
+			['integer', [1], ''],
+			['decimal', [10,2], 'primary'],
+		];
 	}
 
 	private function readDb() : array {

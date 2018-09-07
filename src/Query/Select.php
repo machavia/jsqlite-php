@@ -11,7 +11,7 @@ namespace SqlZero\Query;
 
 use SqlZero\SqlZeroException;
 
-class Select {
+final class Select {
 
 	public $field;
 	public $request;

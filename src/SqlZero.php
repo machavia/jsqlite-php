@@ -8,7 +8,7 @@
 declare(strict_types=1);
 namespace SqlZero;
 
-class SqlZero {
+final class SqlZero {
 
 
 	protected $dbHandle;
@@ -34,15 +34,18 @@ class SqlZero {
 	}
 
 	public function insert( string $table, array $data ) {
-
+		$t = new Table( $table, $this->storage );
+		return $t->insert( $data );
 	}
 
 	public function delete( string $table ) {
-
+		$t = new Table( $table );
+		return $t->delete();
 	}
 
 	public function find( string $table, $primary ) {
-
+		$t = new Table( $table );
+		return $t->get( $primary );
 	}
 
 

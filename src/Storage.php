@@ -11,7 +11,7 @@ namespace SqlZero;
 
 use SqlZero\Query\Query;
 
-class Storage {
+final class Storage {
 
 	private $dbPath = false;
 	private $compression = false;
@@ -92,6 +92,23 @@ class Storage {
 		$this->data[$table][] =  $data;
 
 		$this->write();
+	}
+
+	public function delete( string $table, Query $query ) : int {
+		if( !isset( $this->structure[$table])) {
+			throw new SqlZeroException('Unknown table ' .  $table );
+		}
+
+		$i = 0;
+		$dataToDelete = $query->exec( $this->data[$table]  );
+		foreach( $dataToDelete as $rowId => $useless ) {
+			$i++;
+			unset($this->data[$table][$rowId]);
+		}
+
+		$this->write();
+
+		return $i;
 	}
 
 	public function increaseAutoIncrement( string $tableName ) : int {

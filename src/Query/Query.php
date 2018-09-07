@@ -11,7 +11,7 @@ namespace SqlZero\Query;
 
 use SqlZero\SqlZeroException;
 
-class Query {
+final class Query {
 
 	private $where = [];
 	private $select = [];

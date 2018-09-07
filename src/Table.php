@@ -127,6 +127,13 @@ class Table {
 		return $ai;
 	}
 
+	public function delete() {
+		$deletedRows = $this->storage->delete( $this->name, $this->query );
+		$this->query = new Query\Query();
+
+		return $deletedRows;
+	}
+
 	public function update( array $data ) : int {
 		$updatedRows = $this->storage->update( $this->name, $data, $this->query );
 		$this->query = new Query\Query();
